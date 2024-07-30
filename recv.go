@@ -20,7 +20,7 @@ type RecvPacket struct {
 	Setting     Setting
 	MsgKey      string     // 用于验证此消息是否合法（仿中间人篡改）
 	Expire      uint32     // 消息过期时间 0 表示永不过期
-	MessageID   int64      // 服务端的消息ID(全局唯一)
+	MessageID   uint64     // 服务端的消息ID(全局唯一)
 	MessageSeq  uint32     // 消息序列号 （用户唯一，有序递增）
 	ClientMsgNo string     // 客户端唯一标示
 	StreamNo    string     // 流式编号
@@ -110,7 +110,7 @@ func decodeRecv(frame Frame, data []byte, version uint8) (Frame, error) {
 		recvPacket.StreamFlag = StreamFlag(streamFlag)
 	}
 	// 消息全局唯一ID
-	if recvPacket.MessageID, err = dec.Int64(); err != nil {
+	if recvPacket.MessageID, err = dec.Uint64(); err != nil {
 		return nil, errors.Wrap(err, "解码MessageId失败！")
 	}
 	// 消息序列号 （用户唯一，有序递增）
@@ -172,7 +172,7 @@ func encodeRecv(recvPacket *RecvPacket, enc *Encoder, version uint8) error {
 		enc.WriteUint8(uint8(recvPacket.StreamFlag))
 	}
 	// 消息唯一ID
-	enc.WriteInt64(recvPacket.MessageID)
+	enc.WriteUint64(recvPacket.MessageID)
 	// 消息有序ID
 	enc.WriteUint32(recvPacket.MessageSeq)
 	// 消息时间戳

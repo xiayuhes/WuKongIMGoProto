@@ -9,7 +9,7 @@ import (
 // RecvackPacket 对收取包回执
 type RecvackPacket struct {
 	Framer
-	MessageID  int64  // 服务端的消息ID(全局唯一)
+	MessageID  uint64 // 服务端的消息ID(全局唯一)
 	MessageSeq uint32 // 消息序列号
 }
 
@@ -28,7 +28,7 @@ func decodeRecvack(frame Frame, data []byte, version uint8) (Frame, error) {
 	recvackPacket.Framer = frame.(Framer)
 	var err error
 	// 消息唯一ID
-	if recvackPacket.MessageID, err = dec.Int64(); err != nil {
+	if recvackPacket.MessageID, err = dec.Uint64(); err != nil {
 		return nil, errors.Wrap(err, "解码MessageId失败！")
 	}
 	// 消息唯序列号
@@ -39,7 +39,7 @@ func decodeRecvack(frame Frame, data []byte, version uint8) (Frame, error) {
 }
 
 func encodeRecvack(recvackPacket *RecvackPacket, enc *Encoder, version uint8) error {
-	enc.WriteInt64(recvackPacket.MessageID)
+	enc.WriteUint64(recvackPacket.MessageID)
 	enc.WriteUint32(recvackPacket.MessageSeq)
 	return nil
 }

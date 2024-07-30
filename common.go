@@ -328,7 +328,7 @@ const (
 	ReasonCodeByteSize      = 1
 	MessageIDByteSize       = 8
 	MessageSeqByteSize      = 4
-	TimestampByteSize       = 4
+	TimestampByteSize       = 8
 	ActionByteSize          = 1
 	StreamSeqByteSize       = 4
 	StreamFlagByteSize      = 1

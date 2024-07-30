@@ -14,7 +14,7 @@ func TestRecvEncodeAndDecode(t *testing.T) {
 		MessageID:   1223,
 		Expire:      10,
 		MessageSeq:  9238934,
-		Timestamp:   int32(time.Now().Unix()),
+		Timestamp:   time.Now().UnixMilli(),
 		ChannelID:   "3434",
 		ChannelType: 2,
 		FromUID:     "123",

@@ -26,7 +26,7 @@ type RecvPacket struct {
 	StreamNo    string     // 流式编号
 	StreamSeq   uint32     // 流式序列号
 	StreamFlag  StreamFlag // 流式标记
-	Timestamp   int32      // 服务器消息时间戳(10位，到秒)
+	Timestamp   int64      // 服务器消息时间戳(13位，到毫秒)
 	ChannelID   string     // 频道ID
 	ChannelType uint8      // 频道类型
 	Topic       string     // 话题ID
@@ -118,7 +118,7 @@ func decodeRecv(frame Frame, data []byte, version uint8) (Frame, error) {
 		return nil, errors.Wrap(err, "解码MessageSeq失败！")
 	}
 	// 消息时间
-	if recvPacket.Timestamp, err = dec.Int32(); err != nil {
+	if recvPacket.Timestamp, err = dec.Int64(); err != nil {
 		return nil, errors.Wrap(err, "解码Timestamp失败！")
 	}
 
@@ -176,7 +176,7 @@ func encodeRecv(recvPacket *RecvPacket, enc *Encoder, version uint8) error {
 	// 消息有序ID
 	enc.WriteUint32(recvPacket.MessageSeq)
 	// 消息时间戳
-	enc.WriteInt32(recvPacket.Timestamp)
+	enc.WriteInt64(recvPacket.Timestamp)
 
 	if recvPacket.Setting.IsSet(SettingTopic) {
 		enc.WriteString(recvPacket.Topic)

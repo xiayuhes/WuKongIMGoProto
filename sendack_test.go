@@ -2,6 +2,7 @@ package wkproto
 
 import (
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -12,6 +13,7 @@ func TestSendackEncodeAndDecode(t *testing.T) {
 		ClientSeq:  234,
 		MessageSeq: 2,
 		MessageID:  1234,
+		Timestamp:  time.Now().UnixMilli(),
 		ReasonCode: ReasonSuccess,
 	}
 
@@ -29,5 +31,6 @@ func TestSendackEncodeAndDecode(t *testing.T) {
 	assert.Equal(t, packet.ClientSeq, resultSendackPacket.ClientSeq)
 	assert.Equal(t, packet.MessageSeq, resultSendackPacket.MessageSeq)
 	assert.Equal(t, packet.MessageID, resultSendackPacket.MessageID)
+	assert.Equal(t, packet.Timestamp, resultSendackPacket.Timestamp)
 	assert.Equal(t, packet.ReasonCode, resultSendackPacket.ReasonCode)
 }

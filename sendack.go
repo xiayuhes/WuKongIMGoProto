@@ -11,6 +11,7 @@ type SendackPacket struct {
 	Framer
 	MessageID   uint64     // 消息ID（全局唯一）
 	MessageSeq  uint32     // 消息序列号（用户唯一，有序）
+	Timestamp   int64      // 服务器消息时间戳(13位，到毫秒)
 	ClientSeq   uint64     // 客户端序列号 (客户端提供，服务端原样返回)
 	ClientMsgNo string     // 客户端消息编号(目前只有mos协议有效)
 	ReasonCode  ReasonCode // 原因代码
@@ -33,6 +34,10 @@ func decodeSendack(frame Frame, data []byte, version uint8) (Frame, error) {
 	// messageID
 	if sendackPacket.MessageID, err = dec.Uint64(); err != nil {
 		return nil, errors.Wrap(err, "解码MessageId失败！")
+	}
+	// timestamp
+	if sendackPacket.Timestamp, err = dec.Int64(); err != nil {
+		return nil, errors.Wrap(err, "解码Timestamp失败！")
 	}
 	// clientSeq
 	var clientSeq uint32
@@ -59,6 +64,8 @@ func decodeSendack(frame Frame, data []byte, version uint8) (Frame, error) {
 func encodeSendack(sendackPacket *SendackPacket, enc *Encoder, version uint8) error {
 	// 消息唯一ID
 	enc.WriteUint64(sendackPacket.MessageID)
+	// timestamp
+	enc.WriteInt64(sendackPacket.Timestamp)
 	// clientSeq
 	enc.WriteUint32(uint32(sendackPacket.ClientSeq))
 	// 消息序列号(客户端维护)
@@ -70,5 +77,5 @@ func encodeSendack(sendackPacket *SendackPacket, enc *Encoder, version uint8) er
 
 func encodeSendackSize(packet *SendackPacket, version uint8) int {
 
-	return MessageIDByteSize + ClientSeqByteSize + MessageSeqByteSize + ReasonCodeByteSize
+	return MessageIDByteSize + TimestampByteSize + ClientSeqByteSize + MessageSeqByteSize + ReasonCodeByteSize
 }
